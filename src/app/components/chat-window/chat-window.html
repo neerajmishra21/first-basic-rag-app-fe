@@ -1,0 +1,37 @@
+<div class="chat-container">
+
+  <div class="messages">
+
+    <div
+      *ngFor="let message of messages"
+      class="message"
+      [ngClass]="{
+        'user-message': message.type === 'user',
+        'ai-message': message.type === 'ai'
+      }"
+    >
+    <!-- <pre>message | json</pre> -->
+      {{ message.text }}
+    </div>
+
+  </div>
+
+  <div class="input-area">
+
+    <input
+      type="text"
+      placeholder="Ask something about the PDF..."
+      [(ngModel)]="question"
+    />
+
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="askQuestion()"
+    >
+      Send
+    </button>
+
+  </div>
+
+</div>

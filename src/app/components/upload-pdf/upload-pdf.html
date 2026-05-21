@@ -1,0 +1,17 @@
+<div class="upload-container">
+
+  <input
+    type="file"
+    accept=".pdf"
+    (change)="onFileSelected($event)"
+  />
+
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="uploadPdf()"
+  >
+    Upload PDF
+  </button>
+
+</div>
