@@ -1,1 +1,17 @@
-<router-outlet></router-outlet>
+<div class="workspace-shell" [class.sidebar-collapsed]="sidebarCollapsed()">
+  <app-sidebar
+    [collapsed]="sidebarCollapsed()"
+    (toggleSidebar)="toggleSidebar()"
+  ></app-sidebar>
+
+  <section class="workspace-body">
+    <app-header
+      [sidebarCollapsed]="sidebarCollapsed()"
+      (toggleSidebar)="toggleSidebar()"
+    ></app-header>
+
+    <main class="workspace-content" [class.chat-content]="isPdfChat()">
+      <router-outlet></router-outlet>
+    </main>
+  </section>
+</div>

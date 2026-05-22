@@ -1,0 +1,39 @@
+<article class="profile-card">
+  <div class="card-top">
+    <img [src]="profile.avatar" [alt]="profile.name" />
+    <div class="identity">
+      <h3>{{ profile.name }}</h3>
+      <p>{{ profile.headline }}</p>
+    </div>
+  </div>
+
+  <div class="profile-meta">
+    <span>
+      <mat-icon>business</mat-icon>
+      {{ profile.company }}
+    </span>
+    <span>
+      <mat-icon>location_on</mat-icon>
+      {{ profile.location }}
+    </span>
+  </div>
+
+  <p class="experience">{{ profile.experience }}</p>
+
+  <mat-chip-set aria-label="Profile skills">
+    @for (skill of profile.skills; track skill) {
+      <mat-chip>{{ skill }}</mat-chip>
+    }
+  </mat-chip-set>
+
+  <div class="card-actions">
+    <a mat-flat-button color="primary" [href]="profile.profileUrl" target="_blank" rel="noreferrer">
+      <mat-icon>open_in_new</mat-icon>
+      LinkedIn
+    </a>
+    <button mat-stroked-button type="button">
+      <mat-icon>auto_awesome</mat-icon>
+      AI Summary
+    </button>
+  </div>
+</article>

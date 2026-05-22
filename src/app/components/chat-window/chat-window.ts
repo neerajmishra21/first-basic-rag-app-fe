@@ -26,6 +26,7 @@ interface Message {
 })
 export class ChatWindow implements AfterViewChecked {
   @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
+  @ViewChild('fileInput') private fileInput!: ElementRef<HTMLInputElement>;
   
   private chatService = inject(Chat);
   private shouldScrollToBottom = false;
@@ -33,6 +34,9 @@ export class ChatWindow implements AfterViewChecked {
   question = '';
   messages: Message[] = [];
   isLoading = false;
+  selectedFile?: File;
+  isUploading = false;
+  uploadStatus = 'No PDF selected';
 
   private cdr = inject(ChangeDetectorRef);
 
@@ -92,6 +96,70 @@ export class ChatWindow implements AfterViewChecked {
           ];
 
           this.isLoading = false;
+          this.shouldScrollToBottom = true;
+          this.cdr.detectChanges();
+        }
+      });
+  }
+
+  openFilePicker() {
+    if (this.isUploading) {
+      return;
+    }
+
+    this.fileInput.nativeElement.click();
+  }
+
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    this.selectedFile = file;
+    this.uploadStatus = file.name;
+    this.uploadPdf();
+  }
+
+  uploadPdf() {
+    if (!this.selectedFile || this.isUploading) {
+      return;
+    }
+
+    this.isUploading = true;
+    this.uploadStatus = `Uploading ${this.selectedFile.name}...`;
+
+    this.chatService
+      .uploadPdf(this.selectedFile)
+      .subscribe({
+        next: () => {
+          this.uploadStatus = `${this.selectedFile?.name} ready`;
+          this.isUploading = false;
+          this.messages = [
+            ...this.messages,
+            {
+              type: 'ai',
+              text: `PDF uploaded successfully. You can now ask questions about ${this.selectedFile?.name}.`,
+              timestamp: new Date()
+            }
+          ];
+          this.shouldScrollToBottom = true;
+          this.cdr.detectChanges();
+        },
+        error: (error) => {
+          console.error('Upload error:', error);
+          this.uploadStatus = 'Upload failed. Choose a PDF again.';
+          this.isUploading = false;
+          this.messages = [
+            ...this.messages,
+            {
+              type: 'ai',
+              text: 'I could not upload that PDF. Please try again.',
+              timestamp: new Date()
+            }
+          ];
           this.shouldScrollToBottom = true;
           this.cdr.detectChanges();
         }

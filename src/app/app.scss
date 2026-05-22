@@ -1,0 +1,80 @@
+.workspace-shell {
+  min-height: 100dvh;
+  height: 100dvh;
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  background:
+    radial-gradient(circle at top left, rgba(10, 102, 194, 0.08), transparent 32rem),
+    linear-gradient(135deg, #f7f9fc 0%, #eef3f8 100%);
+  overflow: hidden;
+  transition: grid-template-columns 0.25s ease;
+}
+
+app-sidebar {
+  min-height: 0;
+}
+
+.workspace-shell.sidebar-collapsed {
+  grid-template-columns: 88px minmax(0, 1fr);
+}
+
+.workspace-body {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.workspace-content {
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.workspace-content.chat-content {
+  overflow: hidden;
+  padding: 18px 24px 24px;
+}
+
+@media (max-width: 900px) {
+  .workspace-shell,
+  .workspace-shell.sidebar-collapsed {
+    grid-template-columns: 76px minmax(0, 1fr);
+  }
+
+  .workspace-content {
+    padding: 16px;
+  }
+
+  .workspace-content.chat-content {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 640px) {
+  .workspace-shell,
+  .workspace-shell.sidebar-collapsed {
+    height: 100svh;
+    min-height: 100svh;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) 76px;
+  }
+
+  app-sidebar {
+    grid-row: 2;
+    min-width: 0;
+  }
+
+  .workspace-body {
+    grid-row: 1;
+  }
+
+  .workspace-content {
+    padding: 12px;
+  }
+
+  .workspace-content.chat-content {
+    padding: 8px;
+  }
+}

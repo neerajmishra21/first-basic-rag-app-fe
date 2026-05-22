@@ -6,8 +6,34 @@
       <mat-icon class="header-icon">chat</mat-icon>
       <div class="header-text">
         <h2>AI Assistant</h2>
-        <p>Ask questions about your PDF document</p>
+        <p>{{ uploadStatus }}</p>
       </div>
+    </div>
+
+    <div class="upload-actions">
+      <input
+        #fileInput
+        class="file-input"
+        type="file"
+        accept=".pdf"
+        (change)="onFileSelected($event)"
+      />
+
+      <button
+        mat-stroked-button
+        type="button"
+        class="upload-button"
+        (click)="openFilePicker()"
+        [disabled]="isUploading"
+      >
+        <mat-icon *ngIf="!isUploading">upload_file</mat-icon>
+        <mat-spinner
+          *ngIf="isUploading"
+          diameter="18"
+          class="upload-spinner"
+        ></mat-spinner>
+        {{ isUploading ? 'Uploading' : 'Upload PDF' }}
+      </button>
     </div>
   </div>
 

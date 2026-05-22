@@ -1,0 +1,34 @@
+<aside class="sidebar" [class.collapsed]="collapsed">
+  <div class="brand-row">
+    <div class="brand-mark">AI</div>
+    <div class="brand-copy">
+      <strong>Neeraj's AI Workspace</strong>
+      <span>Research dashboard</span>
+    </div>
+  </div>
+
+  <nav class="nav-list" aria-label="Workspace navigation">
+    @for (item of navItems; track item.route) {
+      <a
+        class="nav-item"
+        [routerLink]="item.route"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        [title]="collapsed ? item.label : ''"
+      >
+        <mat-icon>{{ item.icon }}</mat-icon>
+        <span>{{ item.label }}</span>
+      </a>
+    }
+  </nav>
+
+  <button
+    mat-icon-button
+    class="collapse-button"
+    type="button"
+    [attr.aria-label]="collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+    (click)="toggleSidebar.emit()"
+  >
+    <mat-icon>{{ collapsed ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+  </button>
+</aside>

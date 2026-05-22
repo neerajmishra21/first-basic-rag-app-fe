@@ -1,0 +1,37 @@
+<header class="topbar">
+  <div class="page-title">
+    <button
+      mat-icon-button
+      type="button"
+      class="menu-button"
+      aria-label="Toggle sidebar"
+      (click)="toggleSidebar.emit()"
+    >
+      <mat-icon>{{ sidebarCollapsed ? 'menu_open' : 'menu' }}</mat-icon>
+    </button>
+
+    <div>
+      <span>
+        <mat-icon>{{ pageIcon() }}</mat-icon>
+        {{ pageSubtitle() }}
+      </span>
+      <strong>{{ pageTitle() }}</strong>
+    </div>
+  </div>
+
+  <div class="topbar-actions">
+    <button mat-icon-button type="button" aria-label="Notifications">
+      <mat-icon>notifications_none</mat-icon>
+    </button>
+    <button mat-icon-button type="button" aria-label="Help">
+      <mat-icon>help_outline</mat-icon>
+    </button>
+    <div class="user-pill">
+      <span>N</span>
+      <div>
+        <strong>Neeraj</strong>
+        <small>Pro workspace</small>
+      </div>
+    </div>
+  </div>
+</header>
