@@ -1,37 +1,85 @@
-<div class="chat-container">
+<div class="chat-wrapper">
+  
+  <!-- Header -->
+  <div class="chat-header">
+    <div class="header-content">
+      <mat-icon class="header-icon">chat</mat-icon>
+      <div class="header-text">
+        <h2>AI Assistant</h2>
+        <p>Ask questions about your PDF document</p>
+      </div>
+    </div>
+  </div>
 
-  <div class="messages">
+  <!-- Messages Container -->
+  <div class="messages-container" #messagesContainer>
+    
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="messages.length === 0 && !isLoading">
+      <mat-icon class="empty-icon">question_answer</mat-icon>
+      <h3>Start a Conversation</h3>
+      <p>Ask me anything about your PDF document</p>
+    </div>
 
-    <div
-      *ngFor="let message of messages"
-      class="message"
-      [ngClass]="{
-        'user-message': message.type === 'user',
-        'ai-message': message.type === 'ai'
-      }"
-    >
-    <!-- <pre>message | json</pre> -->
-      {{ message.text }}
+    <!-- Messages -->
+    <div class="messages-list">
+      <!-- <pre>{{messages | json}}</pre> -->
+      <div
+        *ngFor="let message of messages"
+        class="message-wrapper"
+        [ngClass]="message.type"
+      >
+        <div class="message-bubble">
+          <div class="message-content">
+            {{ message.text }}
+          </div>
+          <div class="message-time">
+            {{ formatTime(message.timestamp) }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading Indicator -->
+      <div class="message-wrapper ai" *ngIf="isLoading">
+        <div class="message-bubble loading-bubble">
+          <div class="typing-indicator">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
     </div>
 
   </div>
 
-  <div class="input-area">
-
-    <input
-      type="text"
-      placeholder="Ask something about the PDF..."
-      [(ngModel)]="question"
-    />
-
-    <button
-      mat-raised-button
-      color="primary"
-      (click)="askQuestion()"
-    >
-      Send
-    </button>
-
+  <!-- Input Area -->
+  <div class="input-wrapper">
+    <div class="input-container">
+      <input
+        type="text"
+        class="message-input"
+        placeholder="Type your question here..."
+        [(ngModel)]="question"
+        (keydown)="onEnterPress($event)"
+        [disabled]="isLoading"
+      />
+      
+      <button
+        mat-fab
+        color="primary"
+        class="send-button"
+        (click)="askQuestion()"
+        [disabled]="!question.trim() || isLoading"
+      >
+        <mat-icon *ngIf="!isLoading">send</mat-icon>
+        <mat-spinner 
+          *ngIf="isLoading" 
+          diameter="24"
+          class="button-spinner"
+        ></mat-spinner>
+      </button>
+    </div>
   </div>
 
 </div>

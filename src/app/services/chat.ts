@@ -7,6 +7,8 @@ import { inject, Injectable } from '@angular/core';
 export class Chat {
   private http = inject(HttpClient);
 
+  railwayUrl = "https://first-basic-rag-app-be-production.up.railway.app"
+
   uploadPdf(file: File) {
 
     const formData = new FormData();
@@ -14,7 +16,7 @@ export class Chat {
     formData.append('file', file);
 
     return this.http.post(
-      'http://localhost:8000/upload-pdf',
+      this.railwayUrl+'/upload-pdf',
       formData
     );
   }
@@ -22,7 +24,7 @@ export class Chat {
   askQuestion(question: string) {
 
   return this.http.post(
-    'http://localhost:8000/ask',
+    this.railwayUrl+'/ask',
     {},
     {
       params: {
