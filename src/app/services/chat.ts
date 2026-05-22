@@ -7,7 +7,8 @@ import { inject, Injectable } from '@angular/core';
 export class Chat {
   private http = inject(HttpClient);
 
-  railwayUrl = "https://first-basic-rag-app-be-production.up.railway.app"
+  private readonly baseUrl = 'https://first-basic-rag-app-be-production.up.railway.app';
+  private readonly localUrl = 'http://localhost:8000';
 
   uploadPdf(file: File) {
 
@@ -15,22 +16,18 @@ export class Chat {
 
     formData.append('file', file);
 
-    return this.http.post(
-      this.railwayUrl+'/upload-pdf',
+    return this.http.post(`${this.baseUrl}/upload-pdf`,
       formData
     );
   }
 
   askQuestion(question: string) {
-
-  return this.http.post(
-    this.railwayUrl+'/ask',
-    {},
-    {
-      params: {
-        question
+    return this.http.post(`${this.baseUrl}/ask`,{},
+      {
+        params: {
+          question
+        }
       }
-    }
-  );
-}
+    );
+  }
 }

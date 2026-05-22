@@ -123,83 +123,6 @@
   gap: 20px;
 }
 
-.coming-soon-card {
-  min-height: 320px;
-  display: grid;
-  grid-template-columns: auto minmax(0, 560px);
-  justify-content: center;
-  align-items: center;
-  gap: 28px;
-  padding: 42px;
-  border: 1px solid rgba(10, 102, 194, 0.18);
-  border-radius: 30px;
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(239, 246, 255, 0.88)),
-    radial-gradient(circle at 18% 26%, rgba(10, 102, 194, 0.14), transparent 16rem);
-  box-shadow: 0 22px 52px rgba(15, 23, 42, 0.08);
-
-  h2 {
-    margin: 14px 0 10px;
-    color: #101828;
-    font-size: clamp(1.45rem, 3vw, 2.15rem);
-    line-height: 1.08;
-  }
-
-  p {
-    margin: 0;
-    color: #667085;
-    font-size: 1rem;
-    line-height: 1.65;
-  }
-}
-
-.coming-soon-logo {
-  position: relative;
-  width: 132px;
-  height: 132px;
-  display: grid;
-  place-items: center;
-  border-radius: 32px;
-  background: linear-gradient(135deg, #0a66c2 0%, #2563eb 100%);
-  box-shadow: 0 24px 44px rgba(10, 102, 194, 0.28);
-
-  .linkedin-mark {
-    color: #ffffff;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 4.2rem;
-    font-weight: 800;
-    line-height: 1;
-  }
-
-  mat-icon {
-    position: absolute;
-    right: -12px;
-    bottom: -12px;
-    width: 46px;
-    height: 46px;
-    display: grid;
-    place-items: center;
-    border: 4px solid #ffffff;
-    border-radius: 16px;
-    background: #f59e0b;
-    color: #ffffff;
-    font-size: 26px;
-    box-shadow: 0 12px 26px rgba(180, 83, 9, 0.28);
-  }
-}
-
-.status-pill {
-  display: inline-flex;
-  align-items: center;
-  border-radius: 999px;
-  background: #fff7ed;
-  color: #b45309;
-  padding: 7px 12px;
-  font-size: 0.78rem;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
 .state-card {
   min-height: 300px;
   display: grid;
@@ -358,30 +281,4 @@
     flex-direction: column;
   }
 
-  .coming-soon-card {
-    grid-template-columns: 1fr;
-    justify-items: center;
-    min-height: 0;
-    text-align: center;
-    padding: 26px 18px;
-    border-radius: 22px;
-
-    h2 {
-      font-size: 1.35rem;
-      line-height: 1.15;
-    }
-
-    p {
-      font-size: 0.92rem;
-    }
-  }
-
-  .coming-soon-logo {
-    width: 108px;
-    height: 108px;
-
-    .linkedin-mark {
-      font-size: 3.4rem;
-    }
-  }
 }

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -7,6 +7,10 @@ import {
   LinkedinProfile,
   ProfileCardComponent,
 } from '../../components/profile-card/profile-card.component';
+import {
+  LinkedinSearchApiProfile,
+  LinkedinSearchService,
+} from '../../services/linkedin-search';
 
 @Component({
   selector: 'app-linkedin-search',
@@ -16,9 +20,12 @@ import {
   styleUrl: './linkedin-search.component.scss',
 })
 export class LinkedinSearchComponent {
+  private readonly linkedinSearchService = inject(LinkedinSearchService);
+
   query = '';
   hasSearched = signal(false);
   isLoading = signal(false);
+  errorMessage = signal('');
   results = signal<LinkedinProfile[]>([]);
 
   readonly skeletonCards = Array.from({ length: 6 });
@@ -28,106 +35,73 @@ export class LinkedinSearchComponent {
     return count === 1 ? '1 matching profile' : `${count} matching profiles`;
   });
 
-  private readonly profiles: LinkedinProfile[] = [
-    {
-      id: 1,
-      name: 'Aarav Mehta',
-      headline: 'Senior Product Manager, AI Search',
-      company: 'Microsoft',
-      location: 'Bengaluru, India',
-      experience:
-        'Leads enterprise discovery products with a focus on ranking quality, user intent, and AI-powered workflows.',
-      skills: ['AI Search', 'Product Strategy', 'Enterprise SaaS', 'Analytics'],
-      avatar: 'https://i.pravatar.cc/160?img=12',
-      profileUrl: 'https://www.linkedin.com/',
-    },
-    {
-      id: 2,
-      name: 'Maya Srinivasan',
-      headline: 'Talent Partner for Data and AI Teams',
-      company: 'LinkedIn',
-      location: 'Hyderabad, India',
-      experience:
-        'Builds hiring pipelines for machine learning, platform engineering, and go-to-market leadership roles.',
-      skills: ['Recruiting', 'Talent Mapping', 'LinkedIn Recruiter', 'Sourcing'],
-      avatar: 'https://i.pravatar.cc/160?img=47',
-      profileUrl: 'https://www.linkedin.com/',
-    },
-    {
-      id: 3,
-      name: 'Nikhil Rao',
-      headline: 'Principal Software Engineer',
-      company: 'Google',
-      location: 'Pune, India',
-      experience:
-        'Designs distributed systems and developer platforms for high-volume search and recommendation products.',
-      skills: ['Angular', 'Distributed Systems', 'TypeScript', 'Cloud'],
-      avatar: 'https://i.pravatar.cc/160?img=15',
-      profileUrl: 'https://www.linkedin.com/',
-    },
-    {
-      id: 4,
-      name: 'Priya Kapoor',
-      headline: 'Growth Marketing Lead',
-      company: 'Salesforce',
-      location: 'Mumbai, India',
-      experience:
-        'Owns B2B demand programs across social selling, partner campaigns, and account-based marketing.',
-      skills: ['Growth', 'ABM', 'Content Strategy', 'CRM'],
-      avatar: 'https://i.pravatar.cc/160?img=32',
-      profileUrl: 'https://www.linkedin.com/',
-    },
-    {
-      id: 5,
-      name: 'Daniel Joseph',
-      headline: 'AI Solutions Architect',
-      company: 'Accenture',
-      location: 'Chennai, India',
-      experience:
-        'Helps enterprise teams adopt generative AI assistants, RAG systems, and secure cloud integrations.',
-      skills: ['RAG', 'Azure OpenAI', 'Solution Design', 'Security'],
-      avatar: 'https://i.pravatar.cc/160?img=68',
-      profileUrl: 'https://www.linkedin.com/',
-    },
-    {
-      id: 6,
-      name: 'Sara Thomas',
-      headline: 'UX Designer for Collaboration Tools',
-      company: 'Atlassian',
-      location: 'Remote',
-      experience:
-        'Creates dashboard experiences for knowledge workers with emphasis on clarity, accessibility, and speed.',
-      skills: ['UX Design', 'Design Systems', 'Research', 'Dashboards'],
-      avatar: 'https://i.pravatar.cc/160?img=5',
-      profileUrl: 'https://www.linkedin.com/',
-    },
-  ];
-
   searchProfiles() {
-    const normalizedQuery = this.query.trim().toLowerCase();
+    const query = this.query.trim();
+
+    if (!query || this.isLoading()) {
+      return;
+    }
+
     this.hasSearched.set(true);
     this.isLoading.set(true);
+    this.errorMessage.set('');
     this.results.set([]);
 
-    window.setTimeout(() => {
-      const matches = normalizedQuery
-        ? this.profiles.filter((profile) =>
-            [
-              profile.name,
-              profile.headline,
-              profile.company,
-              profile.location,
-              profile.experience,
-              profile.skills.join(' '),
-            ]
-              .join(' ')
-              .toLowerCase()
-              .includes(normalizedQuery),
-          )
-        : this.profiles;
+    this.linkedinSearchService.searchProfiles(query).subscribe({
+      next: (response) => {
+        this.results.set(
+          (response.results ?? []).map((profile, index) => this.mapApiProfile(profile, index)),
+        );
+        this.isLoading.set(false);
+      },
+      error: (error) => {
+        console.error('LinkedIn search failed:', error);
+        this.errorMessage.set('Unable to fetch LinkedIn profiles. Please try again.');
+        this.isLoading.set(false);
+      },
+    });
+  }
 
-      this.results.set(matches);
-      this.isLoading.set(false);
-    }, 900);
+  private mapApiProfile(profile: LinkedinSearchApiProfile, index: number): LinkedinProfile {
+    const titleParts = this.cleanTitle(profile.title).split(' - ').filter(Boolean);
+    const name = titleParts[0] || this.query.trim();
+    const headline = titleParts.slice(1).join(' - ') || 'LinkedIn profile';
+    const snippet = profile.snippet || 'Open the LinkedIn profile to view more details.';
+
+    return {
+      id: index + 1,
+      name,
+      headline,
+      company: this.extractCompany(titleParts),
+      location: 'LinkedIn',
+      experience: snippet,
+      skills: this.extractSkills(snippet),
+      avatar: this.createAvatarUrl(name),
+      profileUrl: profile.linkedin_url || 'https://www.linkedin.com/',
+    };
+  }
+
+  private cleanTitle(title?: string): string {
+    return (title || '')
+      .replace(/\| LinkedIn/gi, '')
+      .replace(/LinkedIn/gi, '')
+      .trim();
+  }
+
+  private extractCompany(titleParts: string[]): string {
+    return titleParts.length > 2 ? titleParts[titleParts.length - 1] : 'LinkedIn profile';
+  }
+
+  private extractSkills(snippet: string): string[] {
+    const keywords = ['Leadership', 'AI', 'Engineering', 'Product', 'Data', 'Cloud', 'Strategy'];
+    const matches = keywords.filter((keyword) =>
+      snippet.toLowerCase().includes(keyword.toLowerCase()),
+    );
+
+    return matches.length ? matches.slice(0, 4) : ['LinkedIn', 'Profile', 'Search'];
+  }
+
+  private createAvatarUrl(name: string): string {
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0A66C2&color=fff&bold=true`;
   }
 }
